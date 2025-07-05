@@ -1,21 +1,44 @@
-public class Word implements Comparable<Word> {
-    private String text;
+import java.util.Random;
 
-    public Word(String text) {
-        this.text = text.toUpperCase(); // Store in uppercase for consistency
+public class Word {
+    private String letters;
+
+    // Constructor that generates a random 4-letter word
+    public Word() {
+        this.letters = generateRandomLetters(4);
     }
 
-    public String getText() {
-        return text;
+    // Optional constructor for manual word input
+    public Word(String letters) {
+        this.letters = letters.toUpperCase();
     }
 
-    @Override
-    public int compareTo(Word other) {
-        return this.text.compareTo(other.text);
+    // Getter method
+    public String getLetters() {
+        return letters;
+    }
+    
+    // Random letter generator
+    public void reroll() {
+        this.letters = generateRandomLetters(4);
+    } 
+
+    // Generates a random string of uppercase letters
+    private String generateRandomLetters(int length) {
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        Random random = new Random();
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(alphabet.length());
+            result.append(alphabet.charAt(index));
+        }
+
+        return result.toString();
     }
 
     @Override
     public String toString() {
-        return text;
+        return letters;
     }
 }
