@@ -1,3 +1,7 @@
+// Garret Clark
+// 7 - 5 - 25
+// This program is a Scrabble game that will give the user four random letters to make into a word.
+
 import java.util.Random;
 
 public class Word {
