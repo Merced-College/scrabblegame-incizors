@@ -1,0 +1,12 @@
+Q: How did your understanding of object-oriented programming (e.g., classes, constructors, and data structures like ArrayLists) evolve as you worked on this task?
+
+A: While making this program, I found out how essential constructors are for ensuring the program works, along with how important ArrayList are for storing information and retrieving during runtime. 
+
+Q: What challenges did you encounter and how did you go about fixing them?
+
+A: The first challenge I encountered was getting a list of Scrabble words, but I was able to get past that fairly quickly. The biggest challenge by far was getting ScrabbleGame.java to work, and I was able to use AI to help me write the code and fix any errors. 
+
+Q: Explain which LLM, your prompts, or internet help and how debugged your code?
+
+A: I used Chat-GPT, with prompts including "At the moment, the user is only able to enter one word. Can you have the program be able to take in as many inputs from the user as they want?" and "I am getting the error message: Exception in thread "main" java.lang.Error: Unresolved compilation problem: 
+	The method reroll() is undefined for the type Word at ScrabbleGame.main(ScrabbleGame.java:20)". The full conversation is included at https://chatgpt.com/c/686926a0-42c8-800d-bd29-9e8770741600. 
