@@ -2,87 +2,87 @@ import java.util.*;
 import java.io.*;
 
 public class ScrabbleGame {
-    private ArrayList<Word> dictionary = new ArrayList<>();
 
-    public void loadWords(String filename) {
-        try (Scanner scanner = new Scanner(new File(filename))) {
-            while (scanner.hasNextLine()) {
-                String word = scanner.nextLine().trim();
-                if (word.length() >= 2) {  // optional filter
-                    dictionary.add(new Word(word));
-                }
+    private static ArrayList<String> validWords = new ArrayList<>();
+
+    public static void main(String[] args) {
+        // Load the dictionary words into memory from the file
+        loadDictionary("CollinsScarbbleWords_2019.txt");
+
+        Scanner scanner = new Scanner(System.in);
+        Word randomWord = new Word();
+
+        // === REROLL LETTERS LOOP ===
+        // Prompt the user if they want to reroll their 4 letters until they say 'N'
+        while (true) {
+            System.out.println("Your letters are: " + randomWord);
+            System.out.print("Would you like to reroll these letters? (Y/N): ");
+            String rerollChoice = scanner.nextLine().trim().toUpperCase();
+
+            if (rerollChoice.equals("Y")) {
+                randomWord.reroll();  // Generate a new set of letters
+            } else if (rerollChoice.equals("N")) {
+                break;  // Exit loop and proceed with the game
+            } else {
+                System.out.println("Please enter 'Y' or 'N'.");  // Invalid input message
             }
-            Collections.sort(dictionary);  // must be sorted for binary search
+        }
+
+        // === MULTIPLE WORD INPUTS LOOP ===
+        // Inform user how to stop inputting words
+        System.out.println("Enter words using only those letters. Type 'QUIT' to stop.");
+
+        // Continuously prompt the user for words until they type 'QUIT'
+        int attempts = 0;  // Count how many tries user makes
+
+        while (true) {
+            System.out.print("Enter a word: ");
+            String userInput = scanner.nextLine().toUpperCase().trim();
+
+            if (userInput.equals("QUIT")) {
+                System.out.println("Thanks for playing!");
+                break;
+            }
+
+            attempts++;  // Increment attempts on each try
+
+            if (!usesOnlyGivenLetters(userInput, randomWord.getLetters())) {
+                System.out.println("Invalid: You used letters that were not in the original 4.");
+            } else if (isValidWord(userInput)) {
+                System.out.println("Valid word!");
+                System.out.println("It took you " + attempts + " attempt" + (attempts > 1 ? "s" : "") + " to find a valid word.");
+                break;  // Exit after correct word found
+            } else {
+                System.out.println("That word is not in the Scrabble dictionary.");
+            }
+        }
+
+        scanner.close();
+    }
+
+    // Loads all valid Scrabble words from the dictionary file into an ArrayList
+    private static void loadDictionary(String filename) {
+        try (Scanner fileScanner = new Scanner(new File(filename))) {
+            while (fileScanner.hasNextLine()) {
+                validWords.add(fileScanner.nextLine().trim().toUpperCase());
+            }
         } catch (FileNotFoundException e) {
-            System.out.println("Dictionary file not found.");
+            System.out.println("Error: Could not find the dictionary file.");
         }
     }
 
-    public void play() {
-        // Generate 4 random letters
-        Random rand = new Random();
-        char[] letters = new char[4];
-        for (int i = 0; i < 4; i++) {
-            letters[i] = (char) ('A' + rand.nextInt(26));
-        }
-
-        System.out.println("Your letters: " + Arrays.toString(letters));
-        System.out.print("Enter a word using these letters: ");
-
-        Scanner input = new Scanner(System.in);
-        String userWord = input.nextLine().toUpperCase();
-
-        if (!isWordMadeFromLetters(userWord, letters)) {
-            System.out.println("Invalid: your word uses letters not provided.");
-            return;
-        }
-
-        boolean found = binarySearch(userWord);
-        if (found) {
-            System.out.println("Valid word!");
-        } else {
-            System.out.println("Not a valid Scrabble word.");
-        }
-    }
-
-    private boolean isWordMadeFromLetters(String word, char[] letters) {
-        Map<Character, Integer> available = new HashMap<>();
-        for (char c : letters) {
-            available.put(c, available.getOrDefault(c, 0) + 1);
-        }
-
+    // Checks if the user's word uses only letters from the allowed set (repeats allowed)
+    private static boolean usesOnlyGivenLetters(String word, String allowedLetters) {
         for (char c : word.toCharArray()) {
-            if (!available.containsKey(c) || available.get(c) == 0) {
+            if (!allowedLetters.contains(String.valueOf(c))) {
                 return false;
             }
-            available.put(c, available.get(c) - 1);
         }
         return true;
     }
 
-    private boolean binarySearch(String word) {
-        int low = 0;
-        int high = dictionary.size() - 1;
-        Word key = new Word(word);
-
-        while (low <= high) {
-            int mid = (low + high) / 2;
-            int cmp = dictionary.get(mid).compareTo(key);
-            if (cmp == 0) {
-                return true;
-            } else if (cmp < 0) {
-                low = mid + 1;
-            } else {
-                high = mid - 1;
-            }
-        }
-
-        return false;
-    }
-
-    public static void main(String[] args) {
-        ScrabbleGame game = new ScrabbleGame();
-        game.loadWords("CollinsScrabbleWords_2019.txt");
-        game.play();
+    // Checks if the user's word exists in the loaded dictionary
+    private static boolean isValidWord(String word) {
+        return validWords.contains(word);
     }
 }
